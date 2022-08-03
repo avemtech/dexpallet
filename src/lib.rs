@@ -1,8 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
 use sp_runtime::RuntimeDebug;
 use codec::{Encode, Decode, MaxEncodedLen};
@@ -17,14 +14,9 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
-// 2 bytes chain type
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 pub struct ChainId([u8; 8]);
 
-// 8 bytes chainId
-// 2 bytes address type 0 - base, 1 - ERC20
-// 2 bytes adapterId (smart contract)
-// 20 bytes tokenAddress
 #[derive(Clone, Copy, PartialEq, Eq, Encode, Decode, Default, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 pub struct AssetId([u8; 32]);
 
@@ -43,10 +35,8 @@ pub mod pallet {
 	use frame_system::pallet_prelude::*;
 	use super::*;
 
-	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 	}
 
@@ -74,29 +64,19 @@ pub mod pallet {
 	    ValueQuery,
 	>;
 
-	// Pallets use events to inform users when important changes are made.
-	// https://docs.substrate.io/v3/runtime/events-and-errors
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-		/// An order was set. [account, chain_id, foreign_account]
 		SetForeignAccount(T::AccountId, ChainId, ForeignAccount),
-		/// An order was set. [sell_asset_id, buy_asset_id, price, value]
 		SetOrder(AssetId, AssetId, u128, u128),
 	}
 
-	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
-		/// Error names should be descriptive.
 		NoneValue,
-		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
 	}
 
-	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
-	// These functions materialize as "extrinsics", which are often compared to transactions.
-	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 
